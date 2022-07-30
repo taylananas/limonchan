@@ -167,12 +167,11 @@ def profile():
             for x in data:
                 boardname = i
                 posts.append((i,x))
-        else:
-            total = 0
-            return render_template("profile.html",total=total)
-    print(posts[1])
     total = len(posts)
-    return render_template("profile.html",date=date,posts=posts,data=data,boardname=boardname,total=total)
+    if total != 0:
+        return render_template("profile.html",date=date,posts=posts,data=data,boardname=boardname,total=total)
+    else:
+        return render_template("profile.html",total=total)
 
 
 
