@@ -11,7 +11,7 @@ login_manager.init_app(app)
 login_manager.login_view = "login"
 
 def get_db_connection():
-    connect = psycopg2.connect("dbname=postgres user=postgres password=Aukors123")
+    connect = psycopg2.connect("postgres://qubbkhqdeylkex:28b87a762a0fe1dd841f224df2caa5408c99ffe03fa9b47d60155379ad0e4101@ec2-52-204-157-26.compute-1.amazonaws.com:5432/dfn5omign98a33")
     conn = connect.cursor()
     return connect,conn
 
