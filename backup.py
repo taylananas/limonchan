@@ -156,7 +156,7 @@ def load_user(user_id):
     x = conn.fetchone()
     if x:
         conn.close()
-        return User(id,x[1])
+        return User(x[0],x[1])
     else:
         pass
 
@@ -177,7 +177,7 @@ def login():
                     if password == user[2]:
                         login_user(Us)
                         conn.close()
-                        return(url_for("profile"))
+                        return redirect(url_for("profile"))
     return render_template("loginpage.html")
 
 @app.route("/logout")
