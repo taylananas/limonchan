@@ -60,8 +60,11 @@ def board(boardname):
     conn.execute(f'SELECT * FROM {boardname}')
     posts = conn.fetchall()
     posts = reversed(posts)
+    author = conn.execute(f"SELECT creator FROM boards WHERE (board = '{boardname}')")
+    author = conn.fetchone()
+
     conn.close()
-    return render_template("board.html", name=boardname,posts=posts)
+    return render_template("board.html", name=boardname,posts=posts,author=author[0])
 
 @app.route('/board/<boardname>/create', methods=('GET', 'POST'))
 def create(boardname):

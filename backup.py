@@ -10,8 +10,6 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = "login"
 
-ROWS_PER_PAGE = 3
-
 def get_db_connection():
     #postgres://qubbkhqdeylkex:28b87a762a0fe1dd841f224df2caa5408c99ffe03fa9b47d60155379ad0e4101@ec2-52-204-157-26.compute-1.amazonaws.com:5432/dfn5omign98a33
 
@@ -63,8 +61,11 @@ def board(boardname):
     conn.execute(f'SELECT * FROM {boardname}')
     posts = conn.fetchall()
     posts = reversed(posts)
+    author = conn.execute(f"SELECT creator FROM boards WHERE (board = '{boardname}')")
+    author = conn.fetchone()
+
     conn.close()
-    return render_template("board.html", name=boardname,posts=posts)
+    return render_template("board.html", name=boardname,posts=posts,author=author[0])
 
 @app.route('/board/<boardname>/create', methods=('GET', 'POST'))
 def create(boardname):

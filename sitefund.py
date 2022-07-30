@@ -62,4 +62,4 @@ def updatetable(tablename, creator, boardname):
     connect.commit()
     connect.close()
 
-table("users")
+table("boards")
