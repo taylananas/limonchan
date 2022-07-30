@@ -149,6 +149,7 @@ class User(UserMixin):
     def get_id(self):
          return self.id
 
+@app.route("/profile")
 @login_required
 def profile():
     date = datetime.datetime.now().strftime("%Y-%m-%d")
@@ -156,18 +157,24 @@ def profile():
     command = f"SELECT * FROM BOARDS"
     conn.execute(command)
     board = conn.fetchall()
-    if board[0]:
-        posts = []
-        for i in board:
-            command = f"SELECT * FROM {i[1]} WHERE sender = '{current_user.username}'"
-            conn.execute(command)
-            data = conn.fetchall()
+    posts = []
+    for i in board:
+        command = f"SELECT * FROM {i[1]} WHERE sender = '{current_user.username}'"
+        conn.execute(command)
+        data = conn.fetchall()
+        print(data)
+        if data:
             for x in data:
                 boardname = i
                 posts.append((i,x))
-        print(posts[1])
-        total = len(posts)
-        return render_template("profile.html",date=date,posts=posts,data=data,boardname=boardname,total=total)
+        else:
+            total = 0
+            return render_template("profile.html",total=total)
+    print(posts[1])
+    total = len(posts)
+    return render_template("profile.html",date=date,posts=posts,data=data,boardname=boardname,total=total)
+
+
 
 @app.route("/admin")
 @login_required

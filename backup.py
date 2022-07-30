@@ -86,7 +86,7 @@ def create(boardname):
             else:
                 connect,conn = get_db_connection()
                 date = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                conn.execute(f"INSERT INTO {boardname} (text,date,sender) VALUES ('{content}', '{date}', 'Anonymous')")
+                conn.execute(f"INSERT INTO {boardname} (text,date,sender) VALUES ($${content}$$, '{date}', 'Anonymous')")
                 connect.commit()
                 conn.close()
                 return redirect(url_for("board", boardname=boardname ))
@@ -110,19 +110,31 @@ def newuser():
                 rows= conn.fetchall()
                 if len(rows) == 0:
                     print("username does not exist")
-                    conn.execute(f"SELECT username FROM users WHERE EXISTS(SELECT * FROM users WHERE email='{email}')")
-                    rowsmail=conn.fetchall()
-                    if len(rowsmail) == 0:
-                        print("not exists, creating user account")
+                    rowsmail = conn.execute(f"SELECT EXISTS (SELECT * FROM users WHERE email='{email}')")
+                    if not rowsmail:
+                        print("no email, creating user account")
                         date = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                         newuser = f"""INSERT INTO users (username,password,email,date) VALUES ('{username}','{password}','{email}','{date}' )"""
                         conn.execute(newuser)
                         connect.commit()
                         conn.close()
-                    else:
-                        print("email already exist")
+                        return redirect(url_for("login"))
+                    elif rowsmail:
+                        conn.execute(f"SELECT email FROM users WHERE EXISTS(SELECT 1 FROM users WHERE email='{email}')")
+                        rowsmail=conn.fetchone()
+                        if len(rowsmail) == 0:
+                            print("email not exists, creating user account")
+                            date = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                            newuser = f"""INSERT INTO users (username,password,email,date) VALUES ('{username}','{password}','{email}','{date}' )"""
+                            conn.execute(newuser)
+                            connect.commit()
+                            conn.close()
+                            return redirect(url_for("login"))
                 else:
                     print("username exists")
+                    
+
+    return render_template("newuserpage.html")
                     
 
     return render_template("newuserpage.html")
@@ -151,18 +163,23 @@ def profile():
     command = f"SELECT * FROM BOARDS"
     conn.execute(command)
     board = conn.fetchall()
-    if board:
-        posts = []
-        for i in board:
-            command = f"SELECT * FROM {i[1]} WHERE sender = '{current_user.username}'"
-            conn.execute(command)
-            data = conn.fetchall()
+    posts = []
+    for i in board:
+        command = f"SELECT * FROM {i[1]} WHERE sender = '{current_user.username}'"
+        conn.execute(command)
+        data = conn.fetchall()
+        print(data)
+        if data:
             for x in data:
                 boardname = i
                 posts.append((i,x))
-        print(posts[1])
-        total = len(posts)
-        return render_template("profile.html",date=date,posts=posts,data=data,boardname=boardname,total=total)
+        else:
+            total = 0
+            return render_template("profile.html",total=total)
+    print(posts[1])
+    total = len(posts)
+    return render_template("profile.html",date=date,posts=posts,data=data,boardname=boardname,total=total)
+
 
 @app.route("/admin")
 @login_required
