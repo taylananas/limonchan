@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<center>
+<t>
+    Hello {{current_user.username}}<br>
+    {{ date }} <br>
+</t>
+<t1>
+    <a
+        href= {{ url_for('createboard') }}> &nbsp Create new Board &nbsp 
+    </a>   
+</t1>
+<t4>
+    {% if current_user.is_authenticated %} 
+    <a
+        href= {{ url_for("profile")}}> &nbsp Profile &nbsp
+    </a>
+    <a
+        href= {{ url_for("logout")}}> &nbsp Logout &nbsp
+    </a>
+</t4>
+
+<t2>
+    {%else%}
+    <a 
+
+        href= {{ url_for("newuser")}}> &nbsp Register &nbsp
+    </a>
+    <a 
+        href= {{ url_for("login")}}> &nbsp Login &nbsp
+    </a>
+</t2>
+    {%endif%}
+
+<body>
+    {% block content %}
+    {% for boardid in boards %}
+    <div class='board'>
+        <nav>
+            <a href={{ url_for("board", boardname= boardid[1] ) }}> {{boardid[1]}} </a>
+        </nav>
+    </div>
+    {% endfor %}
+    {% endblock %}
+</body>
+
+</center>

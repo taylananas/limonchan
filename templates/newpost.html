@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+{% extends 'base.html' %}
+
+{% block content %} 
+
+    <h1>{% block title %} Add a New Post to {{ name }} {% endblock %}</h1>
+
+    <form method="post">
+        <label for="content">Post Content</label>
+        <br> 
+
+{%for message in get_flashed_messages()%}
+    {{message}}
+{%endfor%}
+
+        <br>
+        <textarea name="content"
+                  placeholder="This place cannot be empty"
+                  rows="15"
+                  cols="60"
+                  >{{ request.form['content'] }}</textarea>
+        <br>
+        <button type="submit">Submit</button>
+    </form>
+{% endblock %}

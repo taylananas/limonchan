@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+{%extends 'base.html' %}
+
+{% block content %}
+    <h1>{% block title %} Create a new Board {% endblock %}</h1>
+    <form method="post">
+        <label for="contentb">Boardname:</label><br>
+        <input type="text" id="contentb" name="contentb"><br>
+        <button type="submit">Submit</button>
+    </form>
+{% endblock %}
