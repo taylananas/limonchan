@@ -4,8 +4,17 @@
 
 {% block content %}<t>
     Welcome {{current_user.username}}<br>
+    Total posts<b>:</b> {{total}}
 </t>
 <p>
     {{date}}
 </p>
+    {% for i in posts %}
+    <div style ="white-space:pre-line" class='post'>
+        <b><t1>>{{ i[1][0] }} <a href= {{ url_for('board', boardname = i[0][1]) }}>{{ i[0][1] }}</a></t1></b><br>
+        <p1>{{ i[1][1] }}</p1>
+        <i><p>{{ i[1][2] }}</p></i>
+    </div>
+    {% endfor %}
 {% endblock %}
+

@@ -19,7 +19,7 @@ def get_db_connection():
 
 @app.route("/")
 def index():
-    date = datetime.datetime.now().strftime("%Y-%m-%d (%H+3):%M:%S")
+    date = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     connect,conn = get_db_connection()
     conn.execute("SELECT * FROM BOARDS")
     boards = conn.fetchall()
@@ -144,7 +144,21 @@ class User(UserMixin):
 @login_required
 def profile():
     date = datetime.datetime.now().strftime("%Y-%m-%d")
-    return render_template("profile.html",date=date)
+    connect, conn = get_db_connection()
+    command = f"SELECT * FROM BOARDS"
+    conn.execute(command)
+    board = conn.fetchall()
+    posts = []
+    for i in board:
+        command = f"SELECT * FROM {i[1]} WHERE sender = '{current_user.username}'"
+        conn.execute(command)
+        data = conn.fetchall()
+        for x in data:
+            boardname = i
+            posts.append((i,x))
+    print(posts[1])
+    total = len(posts)
+    return render_template("profile.html",date=date,posts=posts,data=data,boardname=boardname,total=total)
 
 @app.route("/admin")
 @login_required

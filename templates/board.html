@@ -3,12 +3,11 @@
 
 {% block content %}
     <a href= {{ url_for('create' , boardname=name ) }}> Create new Post</a>
-    
     {% for post in posts %}
-        <div class='post'>
-            <h4>>{{ post[0] }} {{post[3]}}</h4>
+        <div style ="white-space:pre-line" class='post'>
+            <b><t1>>{{ post[0] }} {{post[3]}}</t1></b><br>
             <p1>{{ post[1] }}</p1>
-            <p>{{ post[2] }}</p>
+            <i><p>{{ post[2] }}</p></i>
         </div>
     {% endfor %}
 {% endblock %}
