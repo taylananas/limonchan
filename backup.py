@@ -3,6 +3,8 @@ from flask import Flask, request, render_template, url_for, flash, redirect
 from flask_login import LoginManager, UserMixin, login_required, login_user, logout_user, current_user
 import datetime
 import psycopg2
+import pandas as pd
+import pandas.io.sql as psql
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'limonchan'
@@ -24,7 +26,12 @@ def index():
     conn.execute("SELECT * FROM BOARDS")
     boards = conn.fetchall()
     conn.close()
-    return render_template("mainpage.html", boards=boards, date=date)
+    if current_user.is_authenticated:
+        username = current_user.username
+    else:
+        username = "Anonymous user"
+    isadmin=checkadmin()
+    return render_template("mainpage.html", boards=boards, date=date,isadmin= isadmin,username=username)
 
 @app.route("/createboard", methods=("GET", "POST"))
 @login_required
@@ -180,11 +187,6 @@ def profile(username):
     else:
         return render_template("profile.html",total=total,username=username)
 
-@app.route("/admin")
-@login_required
-def admin():
-    return render_template("adminpage.html")
-
 @login_manager.user_loader
 def load_user(user_id):
     connect,conn = get_db_connection()
@@ -221,6 +223,70 @@ def logout():
     if current_user.is_authenticated:
         logout_user()
         return redirect(url_for('index'))
+
+def checkadmin():
+    connect, conn = get_db_connection()
+    if current_user.is_authenticated:
+        conn.execute(f"SELECT isadmin FROM USERS WHERE username='{current_user.username}'")
+        selected_user = conn.fetchone()
+        admindata = selected_user[0]
+        connect.commit()
+        connect.close()
+        return admindata
+    else:
+        return None
+
+@app.route("/admin")
+@login_required
+def admin():
+    cond = checkadmin()
+    if cond == "yes":
+        userdata = table("users")
+        usercount = len(userdata)
+        userdata.sort()
+        boarddata = table("boards")
+        return render_template("adminpage.html",userdata = userdata,boarddata=boarddata,usercount=usercount,postcount=postcount)
+    else:
+        return redirect("/")
+
+def postcount(username):
+    connect, conn = get_db_connection()
+    command = f"SELECT * FROM BOARDS"
+    conn.execute(command)
+    board = conn.fetchall()
+    posts = []
+    for i in board:
+        command = f"SELECT * FROM {i[1]} WHERE sender = '{username}'"
+        conn.execute(command)
+        data = conn.fetchall()
+        print(data)
+        if data:
+            for x in data:
+                boardname = i
+                posts.append((i,x))
+    total = len(posts)
+    return total
+
+def table(tablename):
+    connect, conn = get_db_connection()
+    tables = gettables()
+    conn.execute(f"SELECT * FROM {tablename}")
+    data = conn.fetchall()
+    connect.close()
+    return data
     
+
+def gettables():
+    connect, conn = get_db_connection()
+    conn.execute("""SELECT table_name FROM information_schema.tables
+        WHERE table_schema = 'public'""")
+    tables = []
+    tabletuple = conn.fetchall()
+    for i in tabletuple:
+        tables.append(i[0])
+    connect.close()
+    return tables
+
+
 if __name__ == "__main__":
     app.run(debug=True)

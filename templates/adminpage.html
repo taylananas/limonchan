@@ -1,2 +1,38 @@
 <!DOCTYPE html>
 {% extends 'base.html' %}
+
+{% block content %} 
+
+<table style="width:40%">
+    
+    <tr>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td>UserTable</td>
+    </tr>
+    <tr style="height:40px">
+        <td>id</td>
+        <td>username</td>
+
+        <td>email</td>
+        <td>date</td>
+        <td>isadmin</td>
+        <td>total_posts</td>
+
+    </tr>
+
+    {% for i in userdata %}
+    <tr>
+      <td>{{i[0]}}</td>
+      <td>{{i[1]}}</td>
+
+      <td>{{i[3]}}</td>
+      <td>{{i[4]}}</td>
+      <td>{{i[5]}}</td>
+      <td>{{postcount(i[1])}}</td>
+    </tr>
+    {%endfor%}
+  </table>
+
+{% endblock %}

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <center>
 <t>
-    Hello {{current_user.username}}<br>
+    Hello {{username}}<br>
     {{ date }} <br>
 </t>
 <t1>
@@ -11,12 +11,25 @@
 </t1>
 <t4>
     {% if current_user.is_authenticated %} 
-    <a
-        href= {{ url_for("profile" , username = current_user.username)}}> &nbsp Profile &nbsp
-    </a>
-    <a
-        href= {{ url_for("logout")}}> &nbsp Logout &nbsp
-    </a>
+
+        {% if isadmin == "yes" %} 
+        <a
+            href= {{ url_for("profile" , username = current_user.username)}}> &nbsp Profile &nbsp
+        </a>
+        <a
+            href= {{ url_for("logout")}}> &nbsp Logout &nbsp
+        </a>
+        <a href= {{ url_for("admin")}}> &nbsp Admin &nbsp
+
+        </a>
+        {%else%}
+        <a
+            href= {{ url_for("profile" , username = current_user.username)}}> &nbsp Profile &nbsp
+        </a>
+        <a
+            href= {{ url_for("logout")}}> &nbsp Logout &nbsp
+        </a>
+        {%endif%}    
 </t4>
 
 <t2>

@@ -35,7 +35,10 @@ def gettables():
     connect, conn = get_db_connection()
     conn.execute("""SELECT table_name FROM information_schema.tables
         WHERE table_schema = 'public'""")
-    tables = conn.fetchall()    
+    tables = []
+    tabletuple = conn.fetchall()
+    for i in tabletuple:
+        tables.append(i[0])
     connect.close()
     return tables
 
@@ -45,10 +48,9 @@ def table(tablename):
     tables = []
     for i in tabletuple:
         tables.append(i[0])
-    print(tables)
     my_table    = psql.read_sql(f'select * from {tablename}', connect)   
-    print(my_table)
     connect.close()
+    return my_table
 
 def altering(tablename,columnname):
     connect, conn = get_db_connection()
@@ -62,4 +64,11 @@ def updatetable(tablename, creator, boardname):
     connect.commit()
     connect.close()
 
-table("boards")
+def makeadmin(username):
+    connect, conn = get_db_connection()
+    conn.execute(f"UPDATE users SET isadmin = 'yes' WHERE username = '{username}'")
+    connect.commit()
+    connect.close()
+
+
+print(gettables())
