@@ -156,7 +156,7 @@ def profile():
     command = f"SELECT * FROM BOARDS"
     conn.execute(command)
     board = conn.fetchall()
-    if board:
+    if board[0]:
         posts = []
         for i in board:
             command = f"SELECT * FROM {i[1]} WHERE sender = '{current_user.username}'"
