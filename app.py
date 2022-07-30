@@ -11,7 +11,7 @@ login_manager.init_app(app)
 login_manager.login_view = "login"
 
 def get_db_connection():
-    connect = psycopg2.connect("postgres://qubbkhqdeylkex:28b87a762a0fe1dd841f224df2caa5408c99ffe03fa9b47d60155379ad0e4101@ec2-52-204-157-26.compute-1.amazonaws.com:5432/dfn5omign98a33")
+    connect = psycopg2.connect("dbname=postgres user=postgres password=Aukors123")
     conn = connect.cursor()
     return connect,conn
 
@@ -107,19 +107,20 @@ def newuser():
                 rows= conn.fetchall()
                 if len(rows) == 0:
                     print("username does not exist")
-                    conn.execute(f"SELECT username FROM users WHERE EXISTS(SELECT 1 FROM users WHERE email='{email}')")
-                    rowsmail=conn.fetchone()
-                    if len(rowsmail[3]) == 0:
-                        print("not exists, creating user account")
+                    rowsmail = conn.execute(f"SELECT EXISTS (SELECT * FROM users WHERE email='{email}')")
+                    if not rowsmail:
+                        print("no email, creating user account")
                         date = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                         newuser = f"""INSERT INTO users (username,password,email,date) VALUES ('{username}','{password}','{email}','{date}' )"""
                         conn.execute(newuser)
                         connect.commit()
                         conn.close()
                         return redirect(url_for("login"))
-                    else:
+                    elif rowsmail:
+                        conn.execute(f"SELECT email FROM users WHERE EXISTS(SELECT 1 FROM users WHERE email='{email}')")
+                        rowsmail=conn.fetchone()
                         if len(rowsmail) == 0:
-                            print("not exists, creating user account")
+                            print("email not exists, creating user account")
                             date = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                             newuser = f"""INSERT INTO users (username,password,email,date) VALUES ('{username}','{password}','{email}','{date}' )"""
                             conn.execute(newuser)
