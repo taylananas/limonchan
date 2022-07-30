@@ -10,6 +10,8 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = "login"
 
+ROWS_PER_PAGE = 3
+
 def get_db_connection():
     #postgres://qubbkhqdeylkex:28b87a762a0fe1dd841f224df2caa5408c99ffe03fa9b47d60155379ad0e4101@ec2-52-204-157-26.compute-1.amazonaws.com:5432/dfn5omign98a33
 
@@ -59,6 +61,7 @@ def board(boardname):
     connect,conn = get_db_connection()
     conn.execute(f'SELECT * FROM {boardname}')
     posts = conn.fetchall()
+    posts = reversed(posts)
     conn.close()
     return render_template("board.html", name=boardname,posts=posts)
 
@@ -72,7 +75,7 @@ def create(boardname):
             else:
                 connect,conn = get_db_connection()
                 date = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                conn.execute(f"INSERT INTO {boardname} (text,date,sender) VALUES ('{content}', '{date}', '{current_user.username}')")
+                conn.execute(f"""INSERT INTO {boardname} (text,date,sender) VALUES ($${content}$$, '{date}', '{current_user.username}')""")
                 connect.commit()
                 conn.close()
                 return redirect(url_for("board", boardname=boardname ))
@@ -148,17 +151,18 @@ def profile():
     command = f"SELECT * FROM BOARDS"
     conn.execute(command)
     board = conn.fetchall()
-    posts = []
-    for i in board:
-        command = f"SELECT * FROM {i[1]} WHERE sender = '{current_user.username}'"
-        conn.execute(command)
-        data = conn.fetchall()
-        for x in data:
-            boardname = i
-            posts.append((i,x))
-    print(posts[1])
-    total = len(posts)
-    return render_template("profile.html",date=date,posts=posts,data=data,boardname=boardname,total=total)
+    if board:
+        posts = []
+        for i in board:
+            command = f"SELECT * FROM {i[1]} WHERE sender = '{current_user.username}'"
+            conn.execute(command)
+            data = conn.fetchall()
+            for x in data:
+                boardname = i
+                posts.append((i,x))
+        print(posts[1])
+        total = len(posts)
+        return render_template("profile.html",date=date,posts=posts,data=data,boardname=boardname,total=total)
 
 @app.route("/admin")
 @login_required

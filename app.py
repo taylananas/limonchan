@@ -57,12 +57,12 @@ def board(boardname):
     connect,conn = get_db_connection()
     conn.execute(f'SELECT * FROM {boardname}')
     posts = conn.fetchall()
+    posts = reversed(posts)
     conn.close()
     return render_template("board.html", name=boardname,posts=posts)
 
 
 @app.route('/board/<boardname>/create', methods=('GET', 'POST'))
-@login_required
 def create(boardname):
     if request.method == 'POST':
         if current_user.is_authenticated:
@@ -72,7 +72,7 @@ def create(boardname):
             else:
                 connect,conn = get_db_connection()
                 date = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                conn.execute(f"INSERT INTO {boardname} (text,date,sender) VALUES ('{content}', '{date}', '{current_user.username}')")
+                conn.execute(f"""INSERT INTO {boardname} (text,date,sender) VALUES ($${content}$$, '{date}', '{current_user.username}')""")
                 connect.commit()
                 conn.close()
                 return redirect(url_for("board", boardname=boardname ))
@@ -83,7 +83,7 @@ def create(boardname):
             else:
                 connect,conn = get_db_connection()
                 date = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                conn.execute(f"INSERT INTO {boardname} (text,date,sender) VALUES ('{content}', '{date}', 'Anonymous')")
+                conn.execute(f"INSERT INTO {boardname} (text,date,sender) VALUES ($${content}$$, '{date}', 'Anonymous')")
                 connect.commit()
                 conn.close()
                 return redirect(url_for("board", boardname=boardname ))
@@ -149,7 +149,6 @@ class User(UserMixin):
     def get_id(self):
          return self.id
 
-@app.route("/profile")
 @login_required
 def profile():
     date = datetime.datetime.now().strftime("%Y-%m-%d")
@@ -157,17 +156,18 @@ def profile():
     command = f"SELECT * FROM BOARDS"
     conn.execute(command)
     board = conn.fetchall()
-    posts = []
-    for i in board:
-        command = f"SELECT * FROM {i[1]} WHERE sender = '{current_user.username}'"
-        conn.execute(command)
-        data = conn.fetchall()
-        for x in data:
-            boardname = i
-            posts.append((i,x))
-    print(posts[1])
-    total = len(posts)
-    return render_template("profile.html",date=date,posts=posts,data=data,boardname=boardname,total=total)
+    if board:
+        posts = []
+        for i in board:
+            command = f"SELECT * FROM {i[1]} WHERE sender = '{current_user.username}'"
+            conn.execute(command)
+            data = conn.fetchall()
+            for x in data:
+                boardname = i
+                posts.append((i,x))
+        print(posts[1])
+        total = len(posts)
+        return render_template("profile.html",date=date,posts=posts,data=data,boardname=boardname,total=total)
 
 @app.route("/admin")
 @login_required
