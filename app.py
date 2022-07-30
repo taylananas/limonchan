@@ -60,7 +60,9 @@ def board(boardname):
     conn.close()
     return render_template("board.html", name=boardname,posts=posts)
 
+
 @app.route('/board/<boardname>/create', methods=('GET', 'POST'))
+@login_required
 def create(boardname):
     if request.method == 'POST':
         if current_user.is_authenticated:
@@ -105,17 +107,25 @@ def newuser():
                 rows= conn.fetchall()
                 if len(rows) == 0:
                     print("username does not exist")
-                    conn.execute(f"SELECT username FROM users WHERE EXISTS(SELECT * FROM users WHERE email='{email}')")
-                    rowsmail=conn.fetchall()
-                    if len(rowsmail) == 0:
+                    conn.execute(f"SELECT username FROM users WHERE EXISTS(SELECT 1 FROM users WHERE email='{email}')")
+                    rowsmail=conn.fetchone()
+                    if len(rowsmail[3]) == 0:
                         print("not exists, creating user account")
                         date = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                         newuser = f"""INSERT INTO users (username,password,email,date) VALUES ('{username}','{password}','{email}','{date}' )"""
                         conn.execute(newuser)
                         connect.commit()
                         conn.close()
+                        return redirect(url_for("login"))
                     else:
-                        print("email already exist")
+                        if len(rowsmail) == 0:
+                            print("not exists, creating user account")
+                            date = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                            newuser = f"""INSERT INTO users (username,password,email,date) VALUES ('{username}','{password}','{email}','{date}' )"""
+                            conn.execute(newuser)
+                            connect.commit()
+                            conn.close()
+                            return redirect(url_for("login"))
                 else:
                     print("username exists")
                     

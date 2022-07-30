@@ -17,7 +17,7 @@ def get_db_connection():
 
 @app.route("/")
 def index():
-    date = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    date = datetime.datetime.now().strftime("%Y-%m-%d (%H+3):%M:%S")
     connect,conn = get_db_connection()
     conn.execute("SELECT * FROM BOARDS")
     boards = conn.fetchall()
