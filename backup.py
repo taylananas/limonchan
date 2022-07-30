@@ -29,6 +29,7 @@ def index():
     return render_template("mainpage.html", boards=boards, date=date)
 
 @app.route("/createboard", methods=("GET", "POST"))
+@login_required
 def createboard():
     connect,conn = get_db_connection()
     if request.method == "POST":    
@@ -40,7 +41,7 @@ def createboard():
                 flash("Write something")
             else:
                 connect,conn = get_db_connection()
-                conn.execute(f"INSERT INTO BOARDS (BOARD) VALUES ('{contentb}')")
+                conn.execute(f"INSERT INTO BOARDS (BOARD,CREATOR) VALUES ('{contentb}','{current_user.username}')")
                 conn.execute(f"""
                 CREATE TABLE {contentb}(
         id SERIAL PRIMARY KEY NOT NULL,
@@ -155,9 +156,8 @@ class User(UserMixin):
     def get_id(self):
          return self.id
 
-@app.route("/profile")
-@login_required
-def profile():
+@app.route("/profile/<username>")
+def profile(username):
     date = datetime.datetime.now().strftime("%Y-%m-%d")
     connect, conn = get_db_connection()
     command = f"SELECT * FROM BOARDS"
@@ -165,7 +165,7 @@ def profile():
     board = conn.fetchall()
     posts = []
     for i in board:
-        command = f"SELECT * FROM {i[1]} WHERE sender = '{current_user.username}'"
+        command = f"SELECT * FROM {i[1]} WHERE sender = '{username}'"
         conn.execute(command)
         data = conn.fetchall()
         print(data)
@@ -175,10 +175,9 @@ def profile():
                 posts.append((i,x))
     total = len(posts)
     if total != 0:
-        return render_template("profile.html",date=date,posts=posts,data=data,boardname=boardname,total=total)
+        return render_template("profile.html",date=date,posts=posts,data=data,boardname=boardname,total=total,username= username)
     else:
-        return render_template("profile.html",total=total)
-
+        return render_template("profile.html",total=total,username=username)
 
 @app.route("/admin")
 @login_required
@@ -213,7 +212,7 @@ def login():
                     if password == user[2]:
                         login_user(Us)
                         conn.close()
-                        return redirect(url_for("profile"))
+                        return redirect(url_for("profile", username= current_user.username))
     return render_template("loginpage.html")
 
 @app.route("/logout")

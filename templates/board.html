@@ -2,7 +2,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <a href= {{ url_for('create' , boardname=name ) }}> Create new Post</a>
+    <a href= {{ url_for('create' , boardname=name ) }}> Create new Post</a> &nbsp Created by {{ current_user.username }}
     {% for post in posts %}
         <div style ="white-space:pre-line" class='post'>
             <b><t1>>{{ post[0] }} {{post[3]}}</t1></b><br>

@@ -12,7 +12,7 @@
 <t4>
     {% if current_user.is_authenticated %} 
     <a
-        href= {{ url_for("profile")}}> &nbsp Profile &nbsp
+        href= {{ url_for("profile" , username = current_user.username)}}> &nbsp Profile &nbsp
     </a>
     <a
         href= {{ url_for("logout")}}> &nbsp Logout &nbsp
