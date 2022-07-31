@@ -6,7 +6,7 @@
 
     {% if author == current_user.username %}
     <a href= {{ url_for('create' , boardname=name ) }}> Create new Post</a> &nbsp Created by <a href= {{ url_for('profile' , username=author ) }}>{{ author }}</a>
-    <br><a href= {{ url_for('deleteboard' , boardname=name ) }}>  Delete Board </a>
+    &nbsp<a href= {{ url_for('deleteboard' , boardname=name ) }}>  Delete Board </a>
 
     {%else%}
     <a href= {{ url_for('create' , boardname=name ) }}> Create new Post</a> &nbsp Created by <a href= {{ url_for('profile' , username=author ) }}>{{ author }}</a>
