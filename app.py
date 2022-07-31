@@ -18,7 +18,7 @@ def get_db_connection():
 
 @app.route("/")
 def index():
-    date = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    date = datetime.datetime.now(pytz.timezone("Europe/Istanbul")).strftime("%Y-%m-%d %H:%M:%S")
     connect,conn = get_db_connection()
     conn.execute("SELECT * FROM BOARDS")
     boards = conn.fetchall()
@@ -93,7 +93,7 @@ def create(boardname):
                 flash('Content is required!')
             else:
                 connect,conn = get_db_connection()
-                date = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                date = datetime.datetime.now(pytz.timezone("Europe/Istanbul")).strftime("%Y-%m-%d %H:%M:%S")
                 conn.execute(f"""INSERT INTO {boardname} (text,date,sender) VALUES ($${content}$$, '{date}', '{current_user.username}')""")
                 connect.commit()
                 conn.close()
@@ -104,7 +104,7 @@ def create(boardname):
                 flash('Content is required!')
             else:
                 connect,conn = get_db_connection()
-                date = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                date = datetime.datetime.now(pytz.timezone("Europe/Istanbul")).strftime("%Y-%m-%d %H:%M:%S")
                 conn.execute(f"INSERT INTO {boardname} (text,date,sender) VALUES ($${content}$$, '{date}', 'Anonymous')")
                 connect.commit()
                 conn.close()
@@ -132,7 +132,7 @@ def newuser():
                     rowsmail = conn.execute(f"SELECT EXISTS (SELECT * FROM users WHERE email='{email}')")
                     if not rowsmail:
                         print("no email, creating user account")
-                        date = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                        date = datetime.datetime.now(pytz.timezone("Europe/Istanbul")).strftime("%Y-%m-%d %H:%M:%S")
                         newuser = f"""INSERT INTO users (username,password,email,date) VALUES ('{username}','{password}','{email}','{date}' )"""
                         conn.execute(newuser)
                         connect.commit()
@@ -143,7 +143,7 @@ def newuser():
                         rowsmail=conn.fetchone()
                         if len(rowsmail) == 0:
                             print("email not exists, creating user account")
-                            date = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                            date = datetime.datetime.now(pytz.timezone("Europe/Istanbul")).strftime("%Y-%m-%d %H:%M:%S")
                             newuser = f"""INSERT INTO users (username,password,email,date) VALUES ('{username}','{password}','{email}','{date}' )"""
                             conn.execute(newuser)
                             connect.commit()
@@ -179,7 +179,7 @@ def profile(username):
     if username == "Anonymous":
         return(redirect("/"))
     else:
-        date = datetime.datetime.now().strftime("%Y-%m-%d")
+        date = datetime.datetime.now(pytz.timezone("Europe/Istanbul")).strftime("%Y-%m-%d")
         connect, conn = get_db_connection()
         command = f"SELECT * FROM BOARDS"
         conn.execute(command)
