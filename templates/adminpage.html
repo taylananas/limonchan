@@ -14,7 +14,6 @@
     <tr style="height:40px">
         <td>id</td>
         <td>username</td>
-
         <td>email</td>
         <td>date</td>
         <td>isadmin</td>
@@ -25,8 +24,7 @@
     {% for i in userdata %}
     <tr>
       <td>{{i[0]}}</td>
-      <td>{{i[1]}}</td>
-
+      <td><a href= {{ url_for('profile' , username=i[1] ) }}>{{ i[1] }}</a></td>
       <td>{{i[3]}}</td>
       <td>{{i[4]}}</td>
       <td>{{i[5]}}</td>
@@ -34,5 +32,27 @@
     </tr>
     {%endfor%}
   </table>
+<br><br><br><br>
+  <table style="width:40%">
+    
+    <tr>
+        <td></td>
+        <td>BoardTable</td>
+        <td></td>
 
+    </tr>
+    <tr style="height:40px">
+        <td>id</td>
+        <td>board</td>
+        <td>creator</td>
+    </tr>
+
+    {% for i in allboards() %}
+    <tr>
+      <td>{{i[0]}}</td>
+      <td><a href= {{ url_for('board' , boardname=i[1] ) }}>{{ i[1] }}</a></td>
+      <td><a href= {{ url_for('profile' , username=i[2] ) }}>{{ i[2] }}</a></td>
+    </tr>
+    {%endfor%}
+  </table>
 {% endblock %}

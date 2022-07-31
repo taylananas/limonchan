@@ -248,7 +248,7 @@ def admin():
         usercount = len(userdata)
         userdata.sort()
         boarddata = table("boards")
-        return render_template("adminpage.html",userdata = userdata,boarddata=boarddata,usercount=usercount,postcount=postcount)
+        return render_template("adminpage.html",userdata = userdata,boarddata=boarddata,usercount=usercount,postcount=postcount,allboards=boardowner)
     else:
         return redirect("/")
 
@@ -262,13 +262,23 @@ def postcount(username):
         command = f"SELECT * FROM {i[1]} WHERE sender = '{username}'"
         conn.execute(command)
         data = conn.fetchall()
-        print(data)
         if data:
             for x in data:
                 boardname = i
                 posts.append((i,x))
     total = len(posts)
     return total
+
+def boardowner():
+    connect, conn = get_db_connection()
+    command = f"SELECT * FROM BOARDS"
+    conn.execute(command)
+    boards = conn.fetchall()
+    allboards = []
+    for i in boards:
+        allboards.append((i[0],i[1],i[2]))
+    print(allboards)
+    return allboards
 
 def table(tablename):
     connect, conn = get_db_connection()

@@ -71,4 +71,4 @@ def makeadmin(username):
     connect.close()
 
 
-table("users")
+print(table("boards"))

@@ -266,6 +266,17 @@ def postcount(username):
                 posts.append((i,x))
     total = len(posts)
     return total
+    
+def boardowner():
+    connect, conn = get_db_connection()
+    command = f"SELECT * FROM BOARDS"
+    conn.execute(command)
+    boards = conn.fetchall()
+    allboards = []
+    for i in boards:
+        allboards.append((i[0],i[1],i[2]))
+    print(allboards)
+    return allboards
 
 def table(tablename):
     connect, conn = get_db_connection()
