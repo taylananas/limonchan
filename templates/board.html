@@ -2,7 +2,16 @@
 {% extends 'base.html' %}
 
 {% block content %}
+
+
+    {% if author == current_user.username %}
     <a href= {{ url_for('create' , boardname=name ) }}> Create new Post</a> &nbsp Created by <a href= {{ url_for('profile' , username=author ) }}>{{ author }}</a>
+    <br><a href= {{ url_for('deleteboard' , boardname=name ) }}>  Delete Board </a>
+
+    {%else%}
+    <a href= {{ url_for('create' , boardname=name ) }}> Create new Post</a> &nbsp Created by <a href= {{ url_for('profile' , username=author ) }}>{{ author }}</a>
+
+    {%endif%}
     {% for post in posts %}
         <div style ="white-space:pre-line" class='post'>
             <b><t1>>{{ post[0] }}  <a href= {{ url_for('profile' , username=post[3] ) }}>{{post[3]}}</t1></b></a><br>

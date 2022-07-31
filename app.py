@@ -55,9 +55,23 @@ def createboard():
                 connect.commit()
                 conn.close()
                 return redirect(url_for("board", boardname=contentb))
-
     return render_template("newboard.html")
 
+@app.route("/board/<boardname>/delete")
+@login_required
+def deleteboard(boardname):
+    name, author = boardcreator(boardname)
+    if current_user.username == author:
+        connect, conn = get_db_connection()    
+        command = f"DELETE FROM BOARDS WHERE board = '{boardname}'"
+        conn.execute(command)
+        command2 = f"DROP TABLE {boardname}"
+        conn.execute(command2)
+        connect.commit()
+        connect.close()
+        return redirect(url_for("index"))
+    else:
+        return redirect(url_for("board", boardname=name))
 
 @app.route("/board/<boardname>")
 def board(boardname):
@@ -67,7 +81,6 @@ def board(boardname):
     posts = reversed(posts)
     author = conn.execute(f"SELECT creator FROM boards WHERE (board = '{boardname}')")
     author = conn.fetchone()
-
     conn.close()
     return render_template("board.html", name=boardname,posts=posts,author=author[0])
 
@@ -259,7 +272,6 @@ def postcount(username):
         command = f"SELECT * FROM {i[1]} WHERE sender = '{username}'"
         conn.execute(command)
         data = conn.fetchall()
-        print(data)
         if data:
             for x in data:
                 boardname = i
@@ -277,6 +289,16 @@ def boardowner():
         allboards.append((i[0],i[1],i[2]))
     allboards.sort()
     return allboards
+
+def boardcreator(boardname):
+    connect, conn = get_db_connection()
+    command = f"SELECT * FROM BOARDS WHERE board = '{boardname}'"
+    conn.execute(command)
+    board = conn.fetchone()
+    boardnm = board[1]
+    boardcreator = board[2]
+    connect.close()
+    return boardnm,boardcreator
 
 def table(tablename):
     connect, conn = get_db_connection()
