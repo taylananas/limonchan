@@ -277,7 +277,7 @@ def boardowner():
     allboards = []
     for i in boards:
         allboards.append((i[0],i[1],i[2]))
-    print(allboards)
+    allboards.sort()
     return allboards
 
 def table(tablename):
