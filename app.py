@@ -163,26 +163,29 @@ class User(UserMixin):
 
 @app.route("/profile/<username>")
 def profile(username):
-    date = datetime.datetime.now().strftime("%Y-%m-%d")
-    connect, conn = get_db_connection()
-    command = f"SELECT * FROM BOARDS"
-    conn.execute(command)
-    board = conn.fetchall()
-    posts = []
-    for i in board:
-        command = f"SELECT * FROM {i[1]} WHERE sender = '{username}'"
-        conn.execute(command)
-        data = conn.fetchall()
-        print(data)
-        if data:
-            for x in data:
-                boardname = i
-                posts.append((i,x))
-    total = len(posts)
-    if total != 0:
-        return render_template("profile.html",date=date,posts=posts,data=data,boardname=boardname,total=total,username= username)
+    if username == "Anonymous":
+        return(redirect("/"))
     else:
-        return render_template("profile.html",total=total,username=username)
+        date = datetime.datetime.now().strftime("%Y-%m-%d")
+        connect, conn = get_db_connection()
+        command = f"SELECT * FROM BOARDS"
+        conn.execute(command)
+        board = conn.fetchall()
+        posts = []
+        for i in board:
+            command = f"SELECT * FROM {i[1]} WHERE sender = '{username}'"
+            conn.execute(command)
+            data = conn.fetchall()
+            print(data)
+            if data:
+                for x in data:
+                    boardname = i
+                    posts.append((i,x))
+        total = len(posts)
+        if total != 0:
+            return render_template("profile.html",date=date,posts=posts,data=data,boardname=boardname,total=total,username= username)
+        else:
+            return render_template("profile.html",total=total,username=username)
 
 @login_manager.user_loader
 def load_user(user_id):
