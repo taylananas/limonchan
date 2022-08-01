@@ -94,6 +94,17 @@ def board(boardname):
     conn.close()
     return render_template("board.html", name=boardname,posts=posts,author=author[0])
 
+@app.route("/board/<board>/deletepost/<postid>")
+def deletepost(board,postid):
+    connect, conn = get_db_connection()
+    if postid:     
+        print(board,postid)
+        command = f"DELETE FROM {board} WHERE id = {postid}"
+        conn.execute(command)
+        connect.commit()
+        connect.close()
+        return(redirect(url_for("board",boardname=board)))
+
 @app.route('/board/<boardname>/create', methods=('GET', 'POST'))
 def create(boardname):
     if request.method == 'POST':

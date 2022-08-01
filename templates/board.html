@@ -10,8 +10,15 @@
             window.location.href = '/board/{{name}}/delete';
         }
     }
-</script>
 
+    function postdeletion(e,postid)
+    {
+        if(confirm('You are going to delete post: '+ postid)) {
+            e.preventDefault(); 
+            window.location.href = '/board/{{name}}/deletepost/'+postid;
+        }
+    }
+</script>
     {% if author == current_user.username %}
     <a href= {{ url_for('create' , boardname=name ) }}> Create new Post</a> &nbsp Created by <a href= {{ url_for('profile' , username=author ) }}>{{ author }}</a>
     <input type="button" onclick="clicked(event)" value="Delete Board" >
@@ -21,10 +28,23 @@
 
     {%endif%}
     {% for post in posts %}
-        <div style ="white-space:pre-line" class='post'>
-            <b><t1>>{{ post[0] }}  <a href= {{ url_for('profile' , username=post[3] ) }}>{{post[3]}}</t1></b></a><br>
-            <p1>{{ post[1] }}</p1>
-            <i><p>{{ post[2] }}</p></i>
-        </div>
+
+        {% if current_user.username == post[3] %}
+            <div style ="white-space:pre-line" class='post'>
+                <b><t1>>{{ post[0] }}  <a href= {{ url_for('profile' , username=post[3]  ) }}>{{post[3]}}</t1></b></a><br>
+                <p1>{{ post[1] }}</p1>
+                <i><p>{{ post[2] }}</p></i>
+                <!-- @ts-ignore -->
+                <input type="button" onclick="postdeletion(event, {{ post[0] }} )" value="Delete Post" >
+            </div>
+
+        {%else%}
+            <div style ="white-space:pre-line" class='post'>
+                <b><t1>>{{ post[0] }}  <a href= {{ url_for('profile' , username=post[3] ) }}>{{post[3]}}</t1></b></a><br>
+                <p1>{{ post[1] }}</p1>
+                <i><p>{{ post[2] }}</p></i>
+            </div>
+
+        {%endif%}
     {% endfor %}
 {% endblock %}

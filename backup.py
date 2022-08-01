@@ -86,7 +86,18 @@ def board(boardname):
     author = conn.execute(f"SELECT creator FROM boards WHERE (board = '{boardname}')")
     author = conn.fetchone()
     conn.close()
-    return render_template("board.html", name=boardname,posts=posts,author=author[0])
+    return render_template("board.html", name=boardname,posts=posts,author=author[0],deletepost=deletepost)
+
+@app.route("/board/<board>/deletepost/<postid>")
+def deletepost(board,postid):
+    connect, conn = get_db_connection()
+    if postid:     
+        print(board,postid)
+        command = f"DELETE FROM {board} WHERE id = {postid}"
+        conn.execute(command)
+        connect.commit()
+        connect.close()
+        return(redirect(url_for("board",boardname=board)))
 
 @app.route('/board/<boardname>/create', methods=('GET', 'POST'))
 def create(boardname):
@@ -296,6 +307,7 @@ def boardowner():
         allboards.append((i[0],i[1],i[2]))
     allboards.sort()
     return allboards
+
 
 def boardcreator(boardname):
     connect, conn = get_db_connection()
