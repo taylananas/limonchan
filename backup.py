@@ -86,7 +86,7 @@ def board(boardname):
     author = conn.execute(f"SELECT creator FROM boards WHERE (board = '{boardname}')")
     author = conn.fetchone()
     conn.close()
-    return render_template("board.html", name=boardname,posts=posts,author=author[0],deletepost=deletepost)
+    return render_template("board.html", name=boardname,posts=posts,author=author[0])
 
 @app.route("/board/<board>/deletepost/<postid>")
 def deletepost(board,postid):
@@ -203,7 +203,6 @@ def profile(username):
             command = f"SELECT * FROM {i[1]} WHERE sender = '{username}'"
             conn.execute(command)
             data = conn.fetchall()
-            print(data)
             if data:
                 for x in data:
                     boardname = i
@@ -307,7 +306,6 @@ def boardowner():
         allboards.append((i[0],i[1],i[2]))
     allboards.sort()
     return allboards
-
 
 def boardcreator(boardname):
     connect, conn = get_db_connection()

@@ -1,16 +1,7 @@
 <!DOCTYPE html>
 {% extends 'base.html' %}
-
 {% block content %}
 <script>
-    function clicked(e)
-    {
-        if(confirm('You are going to delete {{name}}')) {
-            e.preventDefault();
-            window.location.href = '/board/{{name}}/delete';
-        }
-    }
-
     function postdeletion(e,postid)
     {
         if(confirm('You are going to delete post: '+ postid)) {
@@ -18,29 +9,33 @@
             window.location.href = '/board/{{name}}/deletepost/'+postid;
         }
     }
+        function newPost()
+    {
+
+        window.location.href = '/board/{{name}}/create';
+
+    }
 </script>
+    <t style="margin-left:10px" >Board created by <a style="color:black; font-size:1.3em; margin-left:3px; text-decoration: none;"  href= {{ url_for('profile' , username=author ) }}>{{ author }}</a><br></t2></t>
     {% if author == current_user.username %}
-    <a href= {{ url_for('create' , boardname=name ) }}> Create new Post</a> &nbsp Created by <a href= {{ url_for('profile' , username=author ) }}>{{ author }}</a>
-    <input type="button" onclick="clicked(event)" value="Delete Board" >
-
+    <input style="margin-left:10px; margin-top:10px" type="button" onclick="newPost()" value="Create new Post" >
+    <input style="margin-left:10px; margin-top:10px" type="button" onclick="clicked(event)" value="Delete Board" >
     {%else%}
-    <a href= {{ url_for('create' , boardname=name ) }}> Create new Post</a> &nbsp Created by <a href= {{ url_for('profile' , username=author ) }}>{{ author }}</a>
-
+    <input style="margin-left:10px; margin-top:10px""  type="button" onclick="newPost()" value="Create new Post" >
     {%endif%}
     {% for post in posts %}
 
         {% if current_user.username == post[3] %}
             <div style ="white-space:pre-line" class='post'>
-                <b><t1>>{{ post[0] }}  <a href= {{ url_for('profile' , username=post[3]  ) }}>{{post[3]}}</t1></b></a><br>
+                <b><t1>>{{ post[0] }}  <a style="color:black;text-decoration: none;" href= {{ url_for('profile' , username=post[3]  ) }}>{{post[3]}}</t1></b></a><br>
                 <p1>{{ post[1] }}</p1>
                 <i><p>{{ post[2] }}</p></i>
-                <!-- @ts-ignore -->
                 <input type="button" onclick="postdeletion(event, {{ post[0] }} )" value="Delete Post" >
             </div>
 
         {%else%}
             <div style ="white-space:pre-line" class='post'>
-                <b><t1>>{{ post[0] }}  <a href= {{ url_for('profile' , username=post[3] ) }}>{{post[3]}}</t1></b></a><br>
+                <b><t1>>{{ post[0] }}  <a style="color:black;text-decoration: none;" href= {{ url_for('profile' , username=post[3] ) }}>{{post[3]}}</t1></b></a><br>
                 <p1>{{ post[1] }}</p1>
                 <i><p>{{ post[2] }}</p></i>
             </div>
