@@ -2,11 +2,19 @@
 {% extends 'base.html' %}
 
 {% block content %}
-
+<script>
+    function clicked(e)
+    {
+        if(confirm('You are going to delete {{name}}')) {
+            e.preventDefault();
+            window.location.href = '/board/{{name}}/delete';
+        }
+    }
+</script>
 
     {% if author == current_user.username %}
     <a href= {{ url_for('create' , boardname=name ) }}> Create new Post</a> &nbsp Created by <a href= {{ url_for('profile' , username=author ) }}>{{ author }}</a>
-    &nbsp<a href= {{ url_for('deleteboard' , boardname=name ) }}>  Delete Board </a>
+    <input type="button" onclick="clicked(event)" value="Delete Board" >
 
     {%else%}
     <a href= {{ url_for('create' , boardname=name ) }}> Create new Post</a> &nbsp Created by <a href= {{ url_for('profile' , username=author ) }}>{{ author }}</a>

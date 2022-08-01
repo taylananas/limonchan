@@ -126,16 +126,14 @@ def newuser():
             password = request.form["password"]
             email = request.form["email"]
             if not username or not password:
-                print("Wrong")
+                flash("Username or password cannot be empty")
             else:
                 connect,conn = get_db_connection()
                 conn.execute(f"SELECT username FROM users WHERE EXISTS(SELECT * FROM users WHERE username='{username}')")
                 rows= conn.fetchall()
                 if len(rows) == 0:
-                    print("username does not exist")
                     rowsmail = conn.execute(f"SELECT EXISTS (SELECT * FROM users WHERE email='{email}')")
                     if not rowsmail:
-                        print("no email, creating user account")
                         date = datetime.datetime.now(pytz.timezone("Europe/Istanbul")).strftime("%Y-%m-%d %H:%M:%S")
                         newuser = f"""INSERT INTO users (username,password,email,date) VALUES ('{username}','{password}','{email}','{date}' )"""
                         conn.execute(newuser)
@@ -143,18 +141,19 @@ def newuser():
                         conn.close()
                         return redirect(url_for("login"))
                     elif rowsmail:
-                        conn.execute(f"SELECT email FROM users WHERE EXISTS(SELECT 1 FROM users WHERE email='{email}')")
-                        rowsmail=conn.fetchone()
+                        conn.execute(f"SELECT email FROM users WHERE EXISTS(SELECT * FROM users WHERE email='{email}')")
+                        rowsmail=conn.fetchall()
                         if len(rowsmail) == 0:
-                            print("email not exists, creating user account")
                             date = datetime.datetime.now(pytz.timezone("Europe/Istanbul")).strftime("%Y-%m-%d %H:%M:%S")
                             newuser = f"""INSERT INTO users (username,password,email,date) VALUES ('{username}','{password}','{email}','{date}' )"""
                             conn.execute(newuser)
                             connect.commit()
                             conn.close()
                             return redirect(url_for("login"))
+                        else:
+                            flash("This email is already associated with another account")
                 else:
-                    print("username exists")
+                    flash("This username is already taken")
                     
 
     return render_template("newuserpage.html")
@@ -233,6 +232,10 @@ def login():
                         login_user(Us)
                         conn.close()
                         return redirect(url_for("profile", username= current_user.username))
+                    else:
+                        flash("Password is wrong")
+            else:
+                flash("No user found with that username")
     return render_template("loginpage.html")
 
 @app.route("/logout")

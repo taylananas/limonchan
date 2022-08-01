@@ -1,8 +1,33 @@
 <!DOCTYPE html>
 <center>
+    <script>
+            function clock() {// We create a new Date object and assign it to a variable called "time".
+                var time = new Date(),
+                    
+                    // Access the "getHours" method on the Date object with the dot accessor.
+                    hours = time.getHours(),
+                    hours = hours + 3,
+                    
+                    // Access the "getMinutes" method with the dot accessor.
+                    minutes = time.getMinutes(),
+                    
+                    
+                    seconds = time.getSeconds();
+
+                document.querySelectorAll('.clock')[0].innerHTML = harold(hours) + ":" + harold(minutes) + ":" + harold(seconds);
+                
+                function harold(standIn) {
+                    if (standIn < 10) {
+                    standIn = '0' + standIn
+                    }
+                    return standIn;
+                }
+                }
+                setInterval(clock, 1000);
+    </script>
 <t>
     Hello {{username}}<br>
-    {{ date }} <br>
+    <div class="clock"></div>
 </t>
 <t1>
     <a
@@ -27,7 +52,7 @@
             href= {{ url_for("profile" , username = current_user.username)}}> &nbsp Profile &nbsp
         </a>
         <a
-            href= {{ url_for("logout")}}> &nbsp Logout &nbsp
+            href= {{ url_for("logout")}}> &nbsp Logout &nbsp   
         </a>
         {%endif%}    
 </t4>
@@ -39,7 +64,7 @@
         href= {{ url_for("newuser")}}> &nbsp Register &nbsp
     </a>
     <a 
-        href= {{ url_for("login")}}> &nbsp Login &nbsp
+        href= {{ url_for("login")}}> &nbsp Login &nbsp  
     </a>
 </t2>
     {%endif%}
