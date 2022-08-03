@@ -69,6 +69,3 @@ def makeadmin(username):
     conn.execute(f"UPDATE users SET isadmin = 'yes' WHERE username = '{username}'")
     connect.commit()
     connect.close()
-
-
-print(table("users"))
